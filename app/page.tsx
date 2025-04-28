@@ -1,33 +1,43 @@
+"use client"
 import Link from "next/link"
 import Image from "next/image"
 import { CheckCircle, ArrowRight, Menu, Heart, X, Utensils, ChefHat, Brain, MapPin } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { useState } from "react";
 
 export default function LandingPage() {
+  const [currentImage, setCurrentImage] = useState(0)
+  const images = [
+    "/Lasagna.jpg",
+    "/Pasta.jpg"
+  ]
+
+  const changeImage = () => {
+    setCurrentImage((prev) => (prev + 1) % images.length)
+  }
+
   return (
-    <div className="flex min-h-screen flex-col relative before:content-[''] before:fixed before:inset-0 before:z-50 before:pointer-events-none before:bg-black before:opacity-5 before:mix-blend-multiply before:[filter:url(#noiseFilter)]">
+    <div className="flex min-h-screen flex-col  w-full">
 
       <header className="sticky top-0 z-40 w-full border-b bg-background">
-        <div className="container flex h-16 items-center justify-between py-4">
+        <div className=" flex h-16 items-center justify-between py-4">
           <div className="flex items-center gap-2 pl-5">
             <span className="text-xl font-bold text-orange-500">Fooder</span>
           </div>
-
-
 
           <div className="hidden md:flex items-center gap-4">
             <Link href="#" className="text-sm font-medium hover:underline underline-offset-4">
               Log in
             </Link>
-            <Button className="bg-orange-500 hover:bg-orange-600">Download App</Button>
+            <Button className="bg-orange-500 hover:bg-orange-600 cursor-pointer">Download App</Button>
           </div>
         </div>
       </header>
 
-      <main className="flex-1">
+      <main className="flex-1 w-full">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
-          <div className="container px-4 md:px-6">
+          <div className=" px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="inline-block rounded-lg bg-orange-100 text-orange-500 px-3 py-1 text-sm">
@@ -51,20 +61,20 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="flex items-center justify-center">
-                <div className="relative w-[300px] h-[550px] md:w-[350px] md:h-[600px]">
+                <div className="relative w-[300px] h-[550px] md:w-[350px] md:h-[600px] shadow-lg rounded-3xl flex flex-col gap-4 items-center justify-center">
                   <Image
-                    src="/placeholder.svg?height=600&width=350&text=Food+App+Screenshot"
+                    src={images[currentImage]}
                     alt="Fooder app screenshot showing food swiping interface"
-                    width={350}
+                    width={320}
                     height={600}
                     className="rounded-3xl object-cover shadow-xl"
                     priority
                   />
-                  <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4">
-                    <div className="bg-white rounded-full p-4 shadow-lg">
+                  <div className="flex gap-4 w-full justify-center">
+                    <div onClick={changeImage} className="bg-white rounded-full p-4 shadow-lg cursor-pointer">
                       <X className="h-8 w-8 text-gray-400" />
                     </div>
-                    <div className="bg-white rounded-full p-4 shadow-lg">
+                    <div onClick={changeImage} className="bg-white rounded-full p-4 shadow-lg cursor-pointer">
                       <Heart className="h-8 w-8 text-rose-500" />
                     </div>
                   </div>
@@ -76,7 +86,7 @@ export default function LandingPage() {
 
 
         <section id="how-it-works" className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container px-4 md:px-6">
+          <div className="px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-orange-100 text-orange-500 px-3 py-1 text-sm">How It Works</div>
@@ -118,7 +128,7 @@ export default function LandingPage() {
         </section>
 
         <section id="features" className="w-full py-12 md:py-24 lg:py-32 bg-orange-50">
-          <div className="container px-4 md:px-6">
+          <div className=" px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-white text-orange-500 px-3 py-1 text-sm">Features</div>
@@ -177,7 +187,7 @@ export default function LandingPage() {
 
 
         <section id="testimonials" className="w-full py-12 md:py-24 lg:py-32 bg-orange-50">
-          <div className="container px-4 md:px-6">
+          <div className=" px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-white text-orange-500 px-3 py-1 text-sm">Testimonials</div>
@@ -239,7 +249,7 @@ export default function LandingPage() {
         </section>
 
         <section id="faq" className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container px-4 md:px-6">
+          <div className=" px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-orange-100 text-orange-500 px-3 py-1 text-sm">FAQ</div>
@@ -293,7 +303,7 @@ export default function LandingPage() {
 
 
         <section className="w-full py-12 md:py-24 lg:py-32 bg-orange-500 text-white">
-          <div className="container px-4 md:px-6">
+          <div className=" px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
