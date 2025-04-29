@@ -1,6 +1,8 @@
 "use server"
+import { FormState } from "@/components/submitButton";
 import { User } from "@/utils/interface/db";
 import { createClient } from "@/utils/supabase/server";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export const GetCurrentUser = async (): Promise<User | null> => {
@@ -89,3 +91,67 @@ export const signIn = async (
   
     return redirect(safeRedirect);
   };
+
+
+  interface UserFormData {
+    display_name: string;
+    first_name: string;
+    last_name: string;
+    is_teacher: boolean;
+  }
+  
+  interface SignUpResponse {
+    error?: string;
+  }
+  
+  
+  export const signUp = async (
+      prevState: FormState,
+      formData: FormData
+    ): Promise<SignUpResponse | never> => {
+      "use server";
+      const origin = (await headers()).get("origin");
+    
+      const displayName = formData.get("displayName") as string;
+      const firstName = formData.get("firstName") as string;
+      const lastName = formData.get("lastName") as string;
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
+      const supabase = await createClient();
+  
+      const redirectTo = formData.get("redirect") as string || "/home";
+  
+      const safeRedirect = redirectTo?.startsWith("/") ? redirectTo : "/home";
+    
+      const { error, data } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            display_name: displayName,
+            first_name: firstName,
+            last_name: lastName,
+            is_teacher: false,
+          } as UserFormData,
+          emailRedirectTo: `${origin}/auth/callback`,
+        },
+      });
+  
+      if (error) {
+        console.log(error.message)
+        return { error: "Error: " + error.message };
+      }
+      if (!data.user) {
+        return { error: "User Not created" };
+      }
+      
+    //   await createStripeCustomer(
+    //     data.user.id,
+    //     email,
+    //     firstName,
+    //     lastName
+    //   );
+    
+    
+      return redirect(safeRedirect);
+    };
