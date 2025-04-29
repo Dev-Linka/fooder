@@ -5,6 +5,7 @@ import { CheckCircle, ArrowRight, Menu, Heart, X, Utensils, ChefHat, Brain, MapP
 
 import { Button } from "@/components/ui/button"
 import { useState } from "react";
+import Navbar from "@/components/ui/Navbar";
 
 export default function LandingPage() {
   const [currentImage, setCurrentImage] = useState(0)
@@ -20,26 +21,11 @@ export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col  w-full">
 
-      <header className="sticky top-0 z-40 w-full border-b bg-background">
-        <div className=" flex h-16 items-center justify-between py-4">
-          <div className="flex items-center gap-2 pl-5">
-            <span className="text-xl font-bold text-orange-500">Fooder</span>
-          </div>
-
-          <div className="hidden md:flex items-center gap-4">
-            <Link href="#" className="text-sm font-medium hover:underline underline-offset-4">
-              Log in
-            </Link>
-            <Button className="bg-orange-500 hover:bg-orange-600 cursor-pointer">Download App</Button>
-          </div>
-        </div>
-      </header>
-
       <main className="flex-1 w-full">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+        <section className="w-full md:py-24">
           <div className=" px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-              <div className="flex flex-col justify-center space-y-4">
+              <div className="flex flex-col items-center justify-center space-y-4">
                 <div className="inline-block rounded-lg bg-orange-100 text-orange-500 px-3 py-1 text-sm">
                   Food Discovery Reimagined
                 </div>
@@ -54,6 +40,11 @@ export default function LandingPage() {
                   <Button size="lg" className="gap-1.5 bg-orange-500 hover:bg-orange-600">
                   Join the Waitlist
                   </Button>
+                  <Link href="/test">
+                    <Button size="lg" className="gap-1.5 bg-white hover:border-gray-400 text-black hover:bg-white border-2 border-black cursor-pointer">
+                      Try the demo
+                    </Button>
+                  </Link>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle className="h-4 w-4 text-orange-500" />
