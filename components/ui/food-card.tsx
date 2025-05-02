@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion, type PanInfo, useMotionValue, useTransform, type MotionValue } from "framer-motion"
+import { motion, type PanInfo, useMotionValue, type MotionValue } from "framer-motion"
 import { Star } from "lucide-react"
 import Image from "next/image"
 
@@ -23,6 +23,7 @@ interface FoodCardProps {
   initialRotation: number
   stackPosition: number
   swipeX?: MotionValue<number>
+  isMobile?: boolean
 }
 
 export function FoodCard({
@@ -34,25 +35,18 @@ export function FoodCard({
   initialRotation,
   stackPosition,
   swipeX,
+  isMobile = false,
 }: FoodCardProps) {
   const [exitX, setExitX] = useState(0)
   const [exitY, setExitY] = useState(0)
   const [exitRotation, setExitRotation] = useState(0)
+  const [imageError, setImageError] = useState(false)
 
-  // Motion values for interactive dragging
+  // Semplifichiamo le motion values per migliorare le prestazioni
   const x = useMotionValue(0)
   const y = useMotionValue(0)
-  const rotate = useMotionValue(initialRotation)
 
-  // Transform values based on drag position - memoize these calculations
-  const opacity = useTransform(x, [-200, 0, 200], [0.5, 1, 0.5])
-  const scale = useTransform(x, [-300, -100, 0, 100, 300], [0.8, 0.9, 1, 0.9, 0.8])
-
-  // Like/dislike indicators
-  const likeOpacity = useTransform(x, [0, 100], [0, 1])
-  const dislikeOpacity = useTransform(x, [-100, 0], [1, 0])
-
-  // Update the parent's swipeX value when this card moves - use useEffect for better performance
+  // Aggiorniamo il swipeX del genitore quando questa carta si muove
   useEffect(() => {
     if (!swipeX || !isTop) return
 
@@ -63,143 +57,125 @@ export function FoodCard({
     return () => unsubscribe()
   }, [x, swipeX, isTop])
 
-  // Handle drag end - optimized for performance
+  // Ottimizziamo la gestione del drag
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     if (!isTop) return
 
-    const swipeThreshold = 100
-    const velocity = info.velocity.x
+    // Riduciamo la soglia per dispositivi mobili per facilitare lo swipe
+    const swipeThreshold = isMobile ? 60 : 80
     const offset = info.offset.x
 
-    // Determine if the card was swiped far enough
-    if (Math.abs(offset) > swipeThreshold || Math.abs(velocity) > 800) {
+    // Determiniamo se la carta è stata trascinata abbastanza
+    if (Math.abs(offset) > swipeThreshold) {
       const direction = offset > 0 ? 1 : -1
       const liked = direction > 0
 
-      // Set exit values for animation
-      setExitX(direction * window.innerWidth)
+      // Impostiamo i valori di uscita per l'animazione
+      setExitX(direction * 1000)
       setExitY(info.offset.y)
-      setExitRotation(direction * (Math.random() * 20 + 10))
+      setExitRotation(direction * 20)
 
-      // Notify parent component
-      requestAnimationFrame(() => {
-        onSwiped(item.id, liked)
-      })
+      // Notifichiamo il componente genitore
+      onSwiped(item.id, liked)
     } else {
-      // Reset swipeX to 0 if not swiped far enough
-      if (swipeX) {
-        // Use spring animation for smoother return
-        x.set(0)
-        y.set(0)
-        rotate.set(initialRotation)
-        swipeX.set(0)
-      }
+      // Resettiamo la posizione se non è stato trascinato abbastanza
+      x.set(0)
+      y.set(0)
+      if (swipeX) swipeX.set(0)
     }
   }
 
-  // Calculate 3D stack effect
-  const stackScale = isInteractive ? 1 - stackPosition * 0.05 : 0.8
-  const stackY = isInteractive ? stackPosition * 10 : 30
-  const stackOpacity = isInteractive ? 1 - stackPosition * 0.2 : 0
+  // Calcoliamo un effetto stack più semplice
+  const stackScale = 1 - (stackPosition - 1) * 0.05
+  const stackY = (stackPosition - 1) * 10
 
+  // Semplifichiamo il rendering per migliorare le prestazioni
   return (
     <motion.div
-      className={`absolute left-0 top-0 h-full w-full ${isTop ? "cursor-grab active:cursor-grabbing" : ""}`}
+      className="absolute left-0 top-0 h-full w-full"
       style={{
         x,
         y,
-        rotate,
         zIndex,
-        opacity: isInteractive ? opacity : stackOpacity,
-        scale,
-        willChange: "transform", // Hardware acceleration hint
+        rotate: initialRotation,
       }}
       drag={isTop}
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-      dragElastic={0.7}
+      dragElastic={0.6}
       onDragEnd={handleDragEnd}
       initial={{
         scale: stackScale,
         y: stackY,
-        rotate: initialRotation,
       }}
       animate={{
         scale: stackScale,
         y: stackY,
-        rotate: initialRotation,
       }}
       exit={{
         x: exitX,
         y: exitY,
-        rotate: exitRotation,
         opacity: 0,
-        transition: {
-          duration: 0.3,
-          ease: [0.32, 0.72, 0, 1], // Custom easing for smoother animation
-        },
+        rotate: exitRotation,
+        transition: { duration: 0.2 },
       }}
       transition={{
         type: "spring",
-        stiffness: 500, // Higher stiffness for faster response
-        damping: 30, // Adjusted damping for less oscillation
-        mass: 0.5, // Lower mass for faster movement
+        stiffness: 300,
+        damping: 20,
       }}
-      whileTap={{ scale: 1.05 }}
     >
-      <div
-        className="relative h-full w-full overflow-hidden rounded-3xl shadow-xl"
-        style={{
-          perspective: "1000px",
-          transformStyle: "preserve-3d",
-        }}
-      >
-        {/* Glass card effect */}
-        <div className="absolute inset-0 z-10 rounded-3xl bg-gradient-to-br from-white/10 to-white/5" />
-
-        {/* Card content */}
-        <div className="relative z-20 flex h-full flex-col justify-between p-6 select-none">
-          {/* Like/Dislike indicators */}
-          {isTop && (
-            <>
-              <motion.div
-                className="absolute left-6 top-6 rotate-[-20deg] rounded-lg border-4 border-green-500 px-4 py-2 z-20 "
-                style={{ opacity: likeOpacity }}
-              >
-                <span className="text-2xl font-bold text-green-500">LIKE</span>
-              </motion.div>
-              <motion.div
-                className="absolute right-6 top-6 rotate-[20deg] rounded-lg border-4 border-red-500 px-4 py-2 z-20 "
-                style={{ opacity: dislikeOpacity }}
-              >
-                <span className="text-2xl font-bold text-red-500">NOPE</span>
-              </motion.div>
-            </>
-          )}
-
-          {/* Food image */}
-          <div className="absolute inset-0 z-0">
-            <Image width={400} height={200} src={item.image || "/placeholder.svg"} alt={item.name} className="h-full w-full object-cover z-0" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-          </div>
-
-          {/* Food info */}
-          <div className="mt-auto z-20 ">
-            <div className="mb-1 flex items-center">
-              <span className="mr-1 rounded-full bg-yellow-400 px-2 py-0.5 text-xs font-semibold text-black">
-                {item.cuisine}
-              </span>
-              <div className="ml-2 flex items-center">
-                <Star className="mr-1 h-4 w-4 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-medium text-white">{item.rating}</span>
-              </div>
+      <div className="relative h-full w-full overflow-hidden rounded-xl bg-white shadow-md">
+        {/* Immagine del cibo */}
+        <div className="relative h-4/5 w-full overflow-hidden">
+          {item.image && !imageError ? (
+            <Image
+              src={
+                item.image.startsWith("/placeholder")
+                  ? `https://via.placeholder.com/400x600/333/fff?text=${encodeURIComponent(item.name)}`
+                  : item.image
+              }
+              alt={item.name}
+              fill
+              className="object-cover"
+              priority={isTop}
+              sizes="(max-width: 640px) 100vw, 400px"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="h-full w-full bg-gray-300 flex items-center justify-center">
+              <span className="text-gray-500">{item.name}</span>
             </div>
-            <h2 className="mb-1 text-3xl font-bold text-white">{item.name}</h2>
-            <p className="text-sm text-gray-300">{item.description}</p>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-transparent" />
+        </div>
+
+        {/* Indicatore di rating */}
+        <div className="absolute left-3 top-3">
+          <div className="flex items-center gap-1 rounded-full bg-black/30 px-2 py-1">
+            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+            <span className="text-xs font-medium text-white">{item.rating.toFixed(1)}</span>
           </div>
         </div>
 
-        {/* Futuristic border glow */}
-        <div className="absolute inset-0 rounded-3xl border border-white/20 shadow-[0_0_15px_rgba(149,128,255,0.5)]" />
+        {/* Indicatori di Like/Nope - solo per la carta in cima e solo quando viene trascinata */}
+        {isTop && x.get() > 50 && (
+          <div className="absolute right-4 top-4 rounded-lg border-2 border-green-500 px-2 py-1 rotate-12">
+            <span className="text-sm font-bold text-green-500">LIKE</span>
+          </div>
+        )}
+
+        {isTop && x.get() < -50 && (
+          <div className="absolute left-4 top-4 rounded-lg border-2 border-red-500 px-2 py-1 -rotate-12">
+            <span className="text-sm font-bold text-red-500">NOPE</span>
+          </div>
+        )}
+      </div>
+
+      {/* Informazioni sul cibo */}
+      <div className="absolute bottom-0 w-full bg-white p-3">
+        <h3 className="text-lg font-bold">{item.name}</h3>
+        <p className="text-xs text-gray-600">{item.cuisine} Cuisine</p>
+        <p className="mt-0.5 text-xs text-gray-500 line-clamp-2">{item.description}</p>
       </div>
     </motion.div>
   )

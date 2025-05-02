@@ -1,7 +1,7 @@
 "use server";
 
 import Link from "next/link";
-import { Bell, User } from "lucide-react";
+import { Bell } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import MobileNavbar from "./mobile-navbar";
