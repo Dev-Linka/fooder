@@ -97,7 +97,6 @@ export const signIn = async (
     display_name: string;
     first_name: string;
     last_name: string;
-    is_teacher: boolean;
   }
   
   interface SignUpResponse {
@@ -119,9 +118,9 @@ export const signIn = async (
       const password = formData.get("password") as string;
       const supabase = await createClient();
   
-      const redirectTo = formData.get("redirect") as string || "/home";
+      const redirectTo = formData.get("redirect") as string || "/";
   
-      const safeRedirect = redirectTo?.startsWith("/") ? redirectTo : "/home";
+      const safeRedirect = redirectTo?.startsWith("/") ? redirectTo : "/";
     
       const { error, data } = await supabase.auth.signUp({
         email,
@@ -131,7 +130,6 @@ export const signIn = async (
             display_name: displayName,
             first_name: firstName,
             last_name: lastName,
-            is_teacher: false,
           } as UserFormData,
           emailRedirectTo: `${origin}/auth/callback`,
         },
