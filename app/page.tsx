@@ -1,11 +1,10 @@
 "use client"
 import Link from "next/link"
 import Image from "next/image"
-import { CheckCircle, ArrowRight, Menu, Heart, X, Utensils, ChefHat, Brain, MapPin } from "lucide-react"
+import { CheckCircle, Heart, X, Utensils, ChefHat, Brain, MapPin } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { useState } from "react";
-import Navbar from "@/components/ui/Navbar";
 
 export default function LandingPage() {
   const [currentImage, setCurrentImage] = useState(0)
@@ -34,7 +33,7 @@ export default function LandingPage() {
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
                 Swipe. Taste. Repeat. Your personal food genie is here.
-                  Swipe through dishes, and our smart AI learns your taste to suggest meals you'll actually love.
+                  Swipe through dishes, and our smart AI learns your taste to suggest meals you&apos;ll actually love.
                 </p>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Button size="lg" className="gap-1.5 bg-orange-500 hover:bg-orange-600">
@@ -85,7 +84,7 @@ export default function LandingPage() {
                   Find Your Food Match in 3 Simple Steps
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Our app makes discovering new foods you'll love as easy as swiping right.
+                  Our app makes discovering new foods you&apos;ll love as easy as swiping right.
                 </p>
               </div>
             </div>
@@ -124,7 +123,7 @@ export default function LandingPage() {
               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-white text-orange-500 px-3 py-1 text-sm">Features</div>
                 <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
-                  Discover Food You'll Actually Love
+                  Discover Food You&apos;ll Actually Love
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   Our app is packed with features to help you find your perfect food match and never waste a meal again.
@@ -228,7 +227,7 @@ export default function LandingPage() {
                 },
               ].map((testimonial, i) => (
                 <div key={i} className="flex flex-col gap-2 rounded-lg border bg-white p-6 shadow-sm">
-                  <p className="text-sm italic text-muted-foreground">"{testimonial.quote}"</p>
+                  <p className="text-sm italic text-muted-foreground">&quot;{testimonial.quote}&quot;</p>
                   <div className="mt-auto pt-4">
                     <div className="font-medium">{testimonial.author}</div>
                     <div className="text-xs text-muted-foreground">{testimonial.role}</div>
