@@ -7,7 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { signOut } from "@/lib/Api/Auth"
+import { GetCurrentUser, signOut } from "@/lib/Api/Auth"
+import { redirect } from "next/navigation"
 
 // Dati di esempio per il profilo
 const profileData = {
@@ -63,7 +64,13 @@ const profileData = {
   ],
 }
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const user = await GetCurrentUser();
+
+  if(!user){
+    redirect("/")
+  }
+
 
   return (
     <div className="relative w-full h-full max-w-full sm:max-w-4xl mx-auto bg-background text-foreground overflow-auto">
@@ -96,8 +103,8 @@ export default function ProfilePage() {
                       <Edit className="h-3.5 w-3.5" />
                     </Button>
                   </div>
-                  <CardTitle className="text-xl">{profileData.name}</CardTitle>
-                  <CardDescription>{profileData.username}</CardDescription>
+                  <CardTitle className="text-xl">{user.first_name + " " + user.last_name}</CardTitle>
+                  <CardDescription>{user.display_name}</CardDescription>
                 </div>
               </CardHeader>
               <CardContent>
