@@ -75,9 +75,9 @@ export const signIn = async (
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     //TODO implement this
-    const redirectTo = formData.get("redirect") as string || "/home";
+    const redirectTo = formData.get("redirect") as string || "/disvoer";
   
-    const safeRedirect = redirectTo?.startsWith("/") ? redirectTo : "/home";
+    const safeRedirect = redirectTo?.startsWith("/") ? redirectTo : "/discover";
   
     const supabase = await createClient();
     const { error } = await supabase.auth.signInWithPassword({
